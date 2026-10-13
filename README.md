@@ -22,7 +22,7 @@ Streamlit UI (mcp-rag-chat-demo)
 
 ## Run with Docker Compose
 
-The sibling MCP server and chat demo are orchestrated from the parent `ai-projects` directory. Create below structure
+The sibling MCP server and chat demo are orchestrated from the parent `ai-projects` directory.
 
 ```text
 ai-projects/
@@ -30,6 +30,10 @@ ai-projects/
 ├── mcp-rag-server/
 └── mcp-rag-chat-demo/
 ```
+
+- `mcp-rag-server` repository: https://github.com/jam1179/mcp-rag-server
+
+- `mcp-rag-chat-demo` repository: https://github.com/jam1179/mcp-rag-chat-demo
 
 From that parent directory:
 
