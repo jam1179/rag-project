@@ -1,0 +1,75 @@
+services:
+
+  mcp-rag-server:
+    image: mcp-rag-server:0.1.0
+    
+    read_only: true
+
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=256m,mode=1777
+    
+    cap_drop:
+      - ALL
+
+    security_opt:
+      - no-new-privileges:true
+    
+    environment:
+      MCP_HTTP_HOST: "0.0.0.0"
+      MCP_HTTP_PORT: "8000"
+      MCP_HTTP_PATH: "/mcp"
+      LANCEDB_PATH: "/data/lancedb"
+
+    env_file:
+      - ./mcp-rag-server/.env
+
+    ports:
+      - "8000:8000"
+
+    # provisional resource budgets; replace with actual workload
+    cpus: 6.0
+    mem_limit: 4g
+    mem_reservation: 1g
+    pids_limit: 512
+    
+    volumes:
+      - rag-data:/data/lancedb
+      - ./mcp-rag-server/sample-documents:/app/sample-documents:ro
+      - ./mcp-rag-server/scripts/load_sample_document.py:/opt/testing/load_sample.py:ro
+
+
+  mcp-rag-chat-demo:
+    image: mcp-rag-chat-demo:0.1.0
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=128m,mode=1777
+      - /home/app/.streamlit:rw,nosuid,nodev,size=16m,uid=999,gid=999,mode=0700
+    
+    cap_drop:
+      - ALL
+
+    security_opt:
+      - no-new-privileges:true
+
+    environment:
+      MCP_SERVER_URL: "http://mcp-rag-server:8000/mcp"
+
+    env_file:
+      - ./mcp-rag-chat-demo/.env
+
+    ports:
+      - "8501:8501"
+
+     # provisional resource budgets; replace with actual workload
+    cpus: 1.0
+    mem_limit: 512m
+    mem_reservation: 128m
+    pids_limit: 128
+
+    depends_on:
+      - mcp-rag-server
+
+volumes:
+  rag-data:
