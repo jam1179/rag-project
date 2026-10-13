@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-rag-server
+  namespace: mcp-rag
+spec:
+  type: ClusterIP
+  selector:
+    app: mcp-rag-server
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      protocol: TCP

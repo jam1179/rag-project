@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-rag-config
+  namespace: mcp-rag
+data:
+  MCP_HTTP_HOST: "0.0.0.0"
+  MCP_HTTP_PORT: "8000"
+  MCP_HTTP_PATH: "/mcp"
+  LANCEDB_PATH: "/data/lancedb"
+  MCP_SERVER_URL: "http://mcp-rag-server:8000/mcp"

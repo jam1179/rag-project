@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-rag-server
+  namespace: mcp-rag
+  labels:
+    app: mcp-rag-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mcp-rag-server
+  template:
+    metadata:
+      labels:
+        app: mcp-rag-server
+    spec:
+      containers:
+        - name: mcp-rag-server
+          image: mcp-rag-server:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: mcp-rag-config
+            - secretRef:
+                name: mcp-rag-server-secrets

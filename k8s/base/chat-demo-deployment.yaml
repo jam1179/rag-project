@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-rag-chat-demo
+  namespace: mcp-rag
+  labels:
+    app: mcp-rag-chat-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-rag-chat-demo
+  template:
+    metadata:
+      labels:
+        app: mcp-rag-chat-demo
+    spec:
+      containers:
+        - name: mcp-rag-chat-demo
+          image: mcp-rag-chat-demo:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8501
+          envFrom:
+            - configMapRef:
+                name: mcp-rag-config
+            - secretRef:
+                name: mcp-rag-chat-demo-secrets

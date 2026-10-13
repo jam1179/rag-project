@@ -71,3 +71,7 @@ docker compose down
 5. Review the response against the document.
 
 Documents are ingested by the MCP server, not by the chat application's local filesystem.
+
+## Kubernetes Architecture & Deployment Boundaries
+
+![Logo of the project](./images/mermaid-diagram.png)
