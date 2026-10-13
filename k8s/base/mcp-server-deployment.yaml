@@ -29,3 +29,10 @@ spec:
                 name: mcp-rag-config
             - secretRef:
                 name: mcp-rag-server-secrets
+          volumeMounts:
+            - name: lancedb-storage
+              mountPath: /data/lancedb
+      volumes:
+        - name: lancedb-storage
+          persistentVolumeClaim:
+            claimName: mcp-rag-lancedb

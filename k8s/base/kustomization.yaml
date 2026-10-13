@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - configmap.yaml
+  - pvc.yaml
   - mcp-server-deployment.yaml
   - mcp-server-service.yaml
   - chat-demo-deployment.yaml
