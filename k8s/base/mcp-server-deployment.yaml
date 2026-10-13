@@ -17,18 +17,36 @@ spec:
       labels:
         app: mcp-rag-server
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: mcp-rag-server
           image: mcp-rag-server:0.1.0
           imagePullPolicy: IfNotPresent
+
           ports:
             - name: http
               containerPort: 8000
+
           envFrom:
             - configMapRef:
                 name: mcp-rag-config
             - secretRef:
                 name: mcp-rag-server-secrets
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
           resources:
             requests:
               cpu: "1000m"
@@ -36,27 +54,40 @@ spec:
             limits:
               cpu: "6000m"
               memory: "4Gi"
+
           startupProbe:
             tcpSocket:
               port: http
             periodSeconds: 5
             failureThreshold: 24
+
           readinessProbe:
             tcpSocket:
               port: http
             periodSeconds: 5
             timeoutSeconds: 2
             failureThreshold: 3
+
           livenessProbe:
             tcpSocket:
               port: http
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 3
+
           volumeMounts:
             - name: lancedb-storage
               mountPath: /data/lancedb
+
+            - name: temporary-storage
+              mountPath: /tmp
+
       volumes:
         - name: lancedb-storage
           persistentVolumeClaim:
             claimName: mcp-rag-lancedb
+
+        - name: temporary-storage
+          emptyDir:
+            medium: Memory
+            sizeLimit: 256Mi

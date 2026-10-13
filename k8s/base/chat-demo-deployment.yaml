@@ -15,18 +15,35 @@ spec:
       labels:
         app: mcp-rag-chat-demo
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: mcp-rag-chat-demo
           image: mcp-rag-chat-demo:0.1.0
           imagePullPolicy: IfNotPresent
+
           ports:
             - name: http
               containerPort: 8501
+
           envFrom:
             - configMapRef:
                 name: mcp-rag-config
             - secretRef:
                 name: mcp-rag-chat-demo-secrets
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
           resources:
             requests:
               cpu: "100m"
@@ -34,12 +51,14 @@ spec:
             limits:
               cpu: "1000m"
               memory: "512Mi"
+
           startupProbe:
             httpGet:
               path: /_stcore/health
               port: http
             periodSeconds: 5
             failureThreshold: 12
+
           readinessProbe:
             httpGet:
               path: /_stcore/health
@@ -47,6 +66,7 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 2
             failureThreshold: 3
+
           livenessProbe:
             httpGet:
               path: /_stcore/health
@@ -54,3 +74,21 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 3
+
+          volumeMounts:
+            - name: temporary-storage
+              mountPath: /tmp
+
+            - name: streamlit-storage
+              mountPath: /home/app/.streamlit
+
+      volumes:
+        - name: temporary-storage
+          emptyDir:
+            medium: Memory
+            sizeLimit: 128Mi
+
+        - name: streamlit-storage
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Mi
