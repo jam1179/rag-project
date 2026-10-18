@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-rag-server
+  namespace: mcp-rag
+spec:
+  template:
+    spec:
+      containers:
+        - name: mcp-rag-server
+          envFrom:
+            - configMapRef:
+                name: mcp-rag-config
+
+          env:
+            - name: GEMINI_API_KEY_FILE
+              value: /mnt/secrets/gemini-api-key
+
+          volumeMounts:
+            - name: gemini-secrets
+              mountPath: /mnt/secrets
+              readOnly: true
+
+      volumes:
+        - name: gemini-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: mcp-rag-server-kv
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-rag-chat-demo
+  namespace: mcp-rag
+spec:
+  template:
+    spec:
+      containers:
+        - name: mcp-rag-chat-demo
+          envFrom:
+            - configMapRef:
+                name: mcp-rag-config
+
+          env:
+            - name: GEMINI_API_KEY_FILE
+              value: /mnt/secrets/gemini-api-key
+
+          volumeMounts:
+            - name: gemini-secrets
+              mountPath: /mnt/secrets
+              readOnly: true
+
+      volumes:
+        - name: gemini-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: mcp-rag-chat-demo-kv
